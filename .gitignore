@@ -1,0 +1,8 @@
+# Ignore build folder
+/build
+
+#ignore makefile
+Makefile
+
+#ignore vscode folder
+.vscode

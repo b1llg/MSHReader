@@ -1,1 +1,1 @@
-add_executable(mshparser "mshparser.cpp")
+add_executable(main "main.cpp")

@@ -6,4 +6,7 @@ project(
     LANGUAGES CXX
 )
 
+add_subdirectory(lib)
 add_subdirectory(src)
+
+target_link_libraries(main PUBLIC mshreader)

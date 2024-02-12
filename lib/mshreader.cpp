@@ -1,44 +1,8 @@
-#include <iostream>
+// gmshparser.cpp
+
+#include "mshreader.h"
 #include <fstream>
 #include <sstream>
-#include <vector>
-#include <string>
-#include <tuple>
-
-// Define structs to hold different data sections
-struct Node {
-    int tag;
-    double x, y, z;
-};
-
-struct Element {
-    int tag;
-    std::vector<int> nodeTags;
-};
-
-struct PhysicalGroup {
-    int dimension;
-    int tag;
-    std::string name;
-};
-
-struct Partition {
-    int tag;
-    int partition;
-};
-
-struct PeriodicLink {
-    int entityDim;
-    int entityTag;
-    int entityTagMaster;
-    std::vector<std::tuple<int, int>> correspondingNodes;
-};
-
-struct GhostElement {
-    int tag;
-    int partitionTag;
-    std::vector<int> ghostPartitionTags;
-};
 
 // Function to parse nodes from $Nodes section
 std::vector<Node> parseNodes(std::ifstream& file) {
@@ -136,7 +100,7 @@ std::vector<PeriodicLink> parsePeriodics(std::ifstream& file) {
         for (int j = 0; j < numCorrespondingNodes; ++j) {
             int nodeTag, nodeTagMaster;
             file >> nodeTag >> nodeTagMaster;
-            periodic.correspondingNodes.push_back(std::make_tuple(nodeTag, nodeTagMaster));
+            periodic.correspondingNodes.push_back({nodeTag, nodeTagMaster});
         }
         periodics.push_back(periodic);
     }
@@ -163,12 +127,10 @@ std::vector<GhostElement> parseGhostElements(std::ifstream& file) {
     return ghostElements;
 }
 
-int main() 
-{
-    std::ifstream file("ressource/example_5p14.msh"); // Replace with your file name
+std::tuple<std::vector<Node>, std::vector<Element>, std::vector<PhysicalGroup>, std::vector<Partition>, std::vector<PeriodicLink>, std::vector<GhostElement>> parse_msh_file(const std::string& filename) {
+    std::ifstream file(filename);
     if (!file.is_open()) {
-        std::cerr << "Failed to open file." << std::endl;
-        return 1;
+        throw std::runtime_error("Failed to open file.");
     }
 
     std::vector<Node> nodes;
@@ -199,7 +161,5 @@ int main()
         }
     }
 
-    std::cout << "completed" << std::endl;
+    return std::make_tuple(nodes, elements, physicalGroups, partitions, periodics, ghostElements);
 }
-
-   
